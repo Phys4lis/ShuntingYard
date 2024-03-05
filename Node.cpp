@@ -9,6 +9,10 @@ Node::Node() {
   next = NULL;
 }
 
+Node::Node(char newc) {
+  c = newc;
+}
+
 // Destructor
 Node::~Node() {
   next = NULL;
@@ -22,4 +26,8 @@ Node* Node::getNext() {
 // Setters
 void Node::setNext(Node* n) {
   next = n;
+}
+
+void Node::setChar(char newc) {
+  c = newc;
 }
