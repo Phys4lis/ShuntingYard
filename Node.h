@@ -14,6 +14,7 @@ class Node {
   ~Node();
   // Get the next node in the list
   Node* getNext();
+  char getChar();
   // Set the next node in the list
   void setNext(Node* n);
   void setChar(char newc);

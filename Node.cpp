@@ -11,6 +11,7 @@ Node::Node() {
 
 Node::Node(char newc) {
   c = newc;
+  next = NULL;
 }
 
 // Destructor
@@ -21,6 +22,10 @@ Node::~Node() {
 // Getters
 Node* Node::getNext() {
   return next;
+}
+
+char Node::getChar() {
+  return c;
 }
 
 // Setters
