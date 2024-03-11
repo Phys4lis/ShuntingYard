@@ -5,7 +5,7 @@
 using namespace std;
 
 void push(Node* &stackHead, Node* current, Node* newNode);
-void pop(Node* &stackHead, Node* current, Node* previous);
+void pop(Node* &stackHead, Node* &queueHead, Node* &queueTail, Node* current, Node* previous);
 Node* peek(Node* &stackHead, Node* current);
 void enqueue(Node* &queueHead, Node* &queueTail, Node* current, Node* newNode);
 void dequeue(Node* &queueHead, Node* newNode);
@@ -23,15 +23,9 @@ int main() {
   cin.get(input, 50);
   cin.get(); 
   for (int i = 0; i < strlen(input); i++) {
+    newNode = new Node(input[i]);
     if (isdigit(input[i])) {
-      newNode = new Node(input[i]);
-      if (queueHead == NULL && queueTail == NULL) {
-	queueHead = newNode;
-	queueTail = newNode;
-      }
-      else {
-	enqueue(queueHead, queueTail, queueHead, newNode);
-      }
+      enqueue(queueHead, queueTail, queueHead, newNode);
     }
     else if ((input[i] == '+') ||
 	     (input[i] == '-') ||
@@ -40,21 +34,32 @@ int main() {
 	     (input[i] == '^')) {
       while ((stackHead != NULL) && (peek(stackHead, stackHead)->getChar() != '(')) {
 	while ((precedence(peek(stackHead, stackHead)) > precedence(newNode)) || ((precedence(peek(stackHead, stackHead)) == precedence(newNode)) && ((newNode->getChar() != '^')))) {
-	  pop(stackHead, stackHead, stackHead);
-	  enqueue(queueHead, queueTail, queueHead, peek(stackHead, stackHead));
+	  pop(stackHead, queueHead, queueTail, stackHead, stackHead);
 	}
       }
       push(stackHead, stackHead, newNode);
     }
     else if (input[i] == '(') {
-      newNode = new Node(input[i]);
       push(stackHead, stackHead, newNode);
     }
+    else if (input[i] == ')') {
+      while (peek(stackHead, stackHead)->getChar() != ')') {
+	if (stackHead != NULL) {
+	  pop(stackHead, queueHead, queueTail, stackHead, stackHead);
+	}
+      }
+      pop(stackHead, queueHead, queueTail, stackHead, stackHead);
+    }
   }
+
+  /*while (stackHead != NULL) {
+    pop(stackHead, queueHead, queueTail, stackHead, stackHead);
+    }*/
 }
 
 void push(Node* &stackHead, Node* current, Node* newNode) {
   if (stackHead == NULL) {
+    cout << "hooray!" << endl;
     stackHead = newNode;
   }
   else if (current->getNext() != NULL) {
@@ -65,14 +70,19 @@ void push(Node* &stackHead, Node* current, Node* newNode) {
   }
 }
 
-void pop(Node* &stackHead, Node* current, Node* previous) {
+void pop(Node* &stackHead, Node* &queueHead, Node* &queueTail, Node* current, Node* previous) {
   if (stackHead == NULL) {
     cout << "The stack is currently empty!" << endl;
   }
   else if (current->getNext() != NULL) {
-    pop(stackHead, current->getNext(), previous);
+    pop(stackHead, queueHead, queueTail, current->getNext(), current);
+  }
+  else if (current->getChar() == '(') {
+    delete current;
+    previous->setNext(NULL);
   }
   else {
+    enqueue(queueHead, queueTail, queueHead, peek(current, current));
     delete current;
     previous->setNext(NULL);
   }
@@ -93,6 +103,7 @@ Node* peek(Node* &stackHead, Node* current) {
 void enqueue(Node* &queueHead, Node* &queueTail, Node* current, Node* newNode) {
   if (queueHead == NULL) {
     queueHead = newNode;
+    queueTail = newNode;
   }
   else if (current->getNext() != NULL) {
     enqueue(queueHead, queueTail, current->getNext(), newNode);
