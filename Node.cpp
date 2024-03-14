@@ -24,6 +24,14 @@ Node* Node::getNext() {
   return next;
 }
 
+Node* Node::getLeft() {
+  return left;
+}
+
+Node* Node::getRight() {
+  return right;
+}
+
 char Node::getChar() {
   return c;
 }
@@ -31,6 +39,14 @@ char Node::getChar() {
 // Setters
 void Node::setNext(Node* n) {
   next = n;
+}
+
+void Node::setLeft(Node* n) {
+  left = n;
+}
+
+void Node::setRight(Node* n) {
+  right = n;
 }
 
 void Node::setChar(char newc) {

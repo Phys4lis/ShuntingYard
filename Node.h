@@ -14,13 +14,19 @@ class Node {
   ~Node();
   // Get the next node in the list
   Node* getNext();
+  Node* getLeft();
+  Node* getRight();
   char getChar();
   // Set the next node in the list
   void setNext(Node* n);
+  void setLeft(Node* n);
+  void setRight(Node* n);
   void setChar(char newc);
   char c;
 private:
   // Variables
   Node* next;
+  Node* left;
+  Node* right;
 };
 #endif
