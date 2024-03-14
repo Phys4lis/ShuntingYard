@@ -18,9 +18,9 @@ class Node {
   // Set the next node in the list
   void setNext(Node* n);
   void setChar(char newc);
- private:
+  char c;
+private:
   // Variables
   Node* next;
-  char c;
 };
 #endif
