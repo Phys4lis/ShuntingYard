@@ -10,9 +10,10 @@ char peek(Node* stackHead);
 void printStack(Node* stackHead);
 void printQueue(Node* queueHead);
 void enqueue(Node* &queueHead, Node* &queueTail, Node* current, Node* newNode);
-void dequeue(Node* &queueHead, Node* newNode);
+Node* dequeue(Node* &queueHead);
 int precedence(char nodeChar);
 bool conditions(Node* stackHead, Node* newNode);
+void postfix(Node* bStackHead);
 
 int main() {
 
@@ -22,7 +23,8 @@ int main() {
   Node* newNode;
   Node* current;
   bool discard;
-  
+
+  cout << "Input an infix expression." << endl;
   char input[50];
   cin.get(input, 50);
   cin.get(); 
@@ -72,6 +74,48 @@ int main() {
 
   cout << endl << endl;
   printQueue(queueHead);
+
+  Node* bStackHead = NULL;
+
+  for (int i = 0; i < strlen(input); i++) {
+    newNode = dequeue(queueHead);
+    cout << "postfix char: " << newNode->getChar() << endl;
+    if (isdigit(input[i]) == true) {
+      push(bStackHead, bStackHead, newNode);
+    }
+    else if ((input[i] == '+') ||
+	     (input[i] == '-') ||
+	     (input[i] == '*') ||
+	     (input[i] == '/') ||
+	     (input[i] == '^')) {
+      Node* rightNode = new Node(peek(bStackHead));
+      newNode->setRight(rightNode);
+      discard = true;
+      pop(bStackHead, queueHead, queueTail, bStackHead, bStackHead, discard);
+      Node* leftNode = new Node(peek(bStackHead));
+      newNode->setLeft(leftNode);
+    }
+  }
+
+  bool looping = true;
+  while (looping == true) {
+    cout << "INFIX, PREFIX, or POSTFIX" << endl;
+    char input[50];
+    cin.get(input, 50);
+    cin.get();
+    if (strcmp(input, "INFIX") == 0) {
+      
+    }
+    else if (strcmp(input, "PREFIX") == 0) {
+
+    }
+    else if (strcmp(input, "POSTFIX") == 0) {
+      postfix(bStackHead);
+    }
+    else {
+      cout << "Please enter a valid command." << endl;
+    }
+  }
 }
 
 void push(Node* &stackHead, Node* current, Node* newNode) {
@@ -166,6 +210,12 @@ void enqueue(Node* &queueHead, Node* &queueTail, Node* current, Node* newNode) {
   }
 }
 
+Node* dequeue(Node* &queueHead) {
+  Node* temp = queueHead;
+  queueHead = temp->getNext();
+  return temp;
+}
+
 int precedence(char nodeChar) {
   if (nodeChar == '^') {
     return 4;
@@ -199,13 +249,25 @@ bool conditions(Node* stackHead, Node* newNode) {
     return true;
   }
   else {
-    cout << "left paren? " << notLeftParen << endl;
+    /*cout << "left paren? " << notLeftParen << endl;
     cout << "greaterPrec? " << greaterPrecedence << endl;
     cout << "equalPrec? " << equalPrecedence << endl;
     char huh = peek(stackHead);
     cout << "char: " << huh << endl;
     cout << "stackHead Prec: " << precedence(huh) << endl;
-    cout << "newNode Prec: " << precedence(newNode->getChar()) << endl;
+    cout << "newNode Prec: " << precedence(newNode->getChar()) << endl;*/
     return false;
   }
+}
+
+void postfix(Node* bStackHead) {
+  printStack(bStackHead);
+  if (bStackHead->getLeft() != NULL) {
+    postfix(bStackHead->getLeft());
+  }
+  if (bStackHead->getRight() != NULL) {
+    postfix(bStackHead->getRight());
+  }
+  cout << bStackHead->getChar() << endl;
+  return;
 }
