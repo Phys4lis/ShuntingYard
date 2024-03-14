@@ -6,10 +6,12 @@ using namespace std;
 
 void push(Node* &stackHead, Node* current, Node* newNode);
 void pop(Node* &stackHead, Node* &queueHead, Node* &queueTail, Node* current, Node* previous, bool discard);
-Node* peek(Node* &stackHead, Node* current);
+char peek(Node* stackHead);
+void printStack(Node* stackHead);
 void enqueue(Node* &queueHead, Node* &queueTail, Node* current, Node* newNode);
 void dequeue(Node* &queueHead, Node* newNode);
-int precedence(Node* newNode);
+int precedence(char nodeChar);
+bool conditions(Node* stackHead, Node* newNode);
 
 int main() {
 
@@ -24,6 +26,8 @@ int main() {
   cin.get(input, 50);
   cin.get(); 
   for (int i = 0; i < strlen(input); i++) {
+    cout << endl;
+    printStack(stackHead);
     newNode = new Node(input[i]);
     if (isdigit(input[i])) {
       cout << "number in queue" << endl;
@@ -34,9 +38,9 @@ int main() {
 	     (input[i] == '*') ||
 	     (input[i] == '/') ||
 	     (input[i] == '^')) {
-      while ((((stackHead != NULL) && (peek(stackHead, stackHead)->getChar() != '('))) && (((precedence(peek(stackHead, stackHead)) > precedence(newNode)) || ((precedence(peek(stackHead, stackHead)) == precedence(newNode)) && ((newNode->getChar() != '^')))))) {
+      while ((conditions(stackHead, newNode) == true) && (stackHead != NULL)) {
 	  discard = false;
-	  cout << "looping" << endl;
+	  cout << "while loop" << endl;
 	  pop(stackHead, queueHead, queueTail, stackHead, stackHead, discard);
 	  cout << "post pop" << endl;
       }
@@ -48,23 +52,23 @@ int main() {
     }
     else if (input[i] == ')') {
       cout << "right paren" << endl;
-      Node* topNode = peek(stackHead, stackHead);
-      cout << "peek: " << topNode->getChar() << endl;
-      /*while (peek(stackHead, stackHead)->getChar() != ')') {
+      cout << "peek: " << peek(stackHead) << endl;
+      while ((peek(stackHead) != ')') && (stackHead != NULL)) {
 	if (stackHead != NULL) {
 	  discard = false;
 	  pop(stackHead, queueHead, queueTail, stackHead, stackHead, discard);
-	}
-	}*/
+        }
+      }
       cout << "rah" << endl;
       discard = true;
       pop(stackHead, queueHead, queueTail, stackHead, stackHead, discard);
     }
   }
 
-  /*while (stackHead != NULL) {
-    pop(stackHead, queueHead, queueTail, stackHead, stackHead);
-    }*/
+  while (stackHead != NULL) {
+    discard = false;
+    pop(stackHead, queueHead, queueTail, stackHead, stackHead, discard);
+  }
 }
 
 void push(Node* &stackHead, Node* current, Node* newNode) {
@@ -94,7 +98,7 @@ void pop(Node* &stackHead, Node* &queueHead, Node* &queueTail, Node* current, No
   else {
     cout << "successfully popped!" << endl;
     if (discard == false) {
-      enqueue(queueHead, queueTail, queueHead, peek(stackHead, stackHead));
+      enqueue(queueHead, queueTail, queueHead, current);
     }
     if (current == stackHead) {
       stackHead = NULL;
@@ -103,20 +107,31 @@ void pop(Node* &stackHead, Node* &queueHead, Node* &queueTail, Node* current, No
   }
 }
 
-Node* peek(Node* &stackHead, Node* current) {
+char peek(Node* stackHead) {
   if (stackHead == NULL) {
     cout << "The stack is currently empty!" << endl;
   }
-  else if (current->getNext() != NULL) {
-    peek(stackHead, current->getNext());
+  else if (stackHead->getNext() != NULL) {
+    peek(stackHead->getNext());
   }
   else {
-    Node* tempNode = new Node('e');
-    current = tempNode;
-    cout << "char: " << current->getChar() << endl;
-    return current;
+    cout << "peek char: " << stackHead->getChar() << endl;
+    return (stackHead->getChar());
   }
   return 0;
+}
+
+void printStack(Node* stackHead) {
+  if (stackHead == NULL) {
+    cout << "empty stack" << endl;
+  }
+  else if (stackHead->getNext() != NULL) {
+    cout << "printing: " << stackHead->getChar() << endl;
+    printStack(stackHead->getNext());
+  }
+  else {
+    cout << "printing: " << stackHead->getChar() << endl << endl;
+  }
 }
 
 void enqueue(Node* &queueHead, Node* &queueTail, Node* current, Node* newNode) {
@@ -133,15 +148,46 @@ void enqueue(Node* &queueHead, Node* &queueTail, Node* current, Node* newNode) {
   }
 }
 
-int precedence(Node* newNode) {
-  if (newNode->getChar() == '^') {
+int precedence(char nodeChar) {
+  if (nodeChar == '^') {
     return 4;
   }
-  else if ((newNode->getChar() == '*') || (newNode->getChar() == '/')) {
+  else if ((nodeChar == '*') || (nodeChar == '/')) {
     return 3;
   }
-  else if ((newNode->getChar() == '+') || (newNode->getChar() == '-')) {
+  else if ((nodeChar == '+') || (nodeChar == '-')) {
     return 2;
   }
-  return 0;
+  else {
+    return 0;
+  }
+}
+
+bool conditions(Node* stackHead, Node* newNode) {
+  bool notLeftParen = false;
+  if (peek(stackHead) != '(') {
+    notLeftParen = true;
+  }
+  bool greaterPrecedence = false;
+  if ((precedence(peek(stackHead))) > (precedence(newNode->getChar()))) {
+      greaterPrecedence = true;
+  }
+  bool equalPrecedence = false;  
+  if (((precedence(peek(stackHead))) == (precedence(newNode->getChar()))) && (newNode->getChar() != '^')) {
+    equalPrecedence = true;
+  }
+  if ((notLeftParen == true) && ((greaterPrecedence == true) || (equalPrecedence == true))) {
+    cout << "what the flip" << endl;
+    return true;
+  }
+  else {
+    cout << "left paren? " << notLeftParen << endl;
+    cout << "greaterPrec? " << greaterPrecedence << endl;
+    cout << "equalPrec? " << equalPrecedence << endl;
+    char huh = peek(stackHead);
+    cout << "char: " << huh << endl;
+    cout << "stackHead Prec: " << precedence(huh) << endl;
+    cout << "newNode Prec: " << precedence(newNode->getChar()) << endl;
+    return false;
+  }
 }
