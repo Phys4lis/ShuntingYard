@@ -7,16 +7,22 @@ using namespace std;
 // Constructor
 Node::Node() {
   next = NULL;
+  left = NULL;
+  right = NULL;
 }
 
 Node::Node(char newc) {
   c = newc;
   next = NULL;
+  left = NULL;
+  right = NULL;
 }
 
 // Destructor
 Node::~Node() {
   next = NULL;
+  left = NULL;
+  right = NULL;
 }
 
 // Getters
