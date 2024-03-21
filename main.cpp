@@ -160,7 +160,12 @@ void pop(Node* &stackHead, Node* &queueHead, Node* &queueTail, Node* current, No
   }
   else if (current->getChar() == '(') {
     delete current;
-    previous->setNext(NULL);
+    if (stackHead->getChar() != '(') {
+      previous->setNext(NULL);
+    }
+    if (current == stackHead) {
+      stackHead = NULL;
+    }
   }
   else {
     // If we don't discard, enqueue the token
